@@ -32,7 +32,7 @@ class Plugin(api.Plugin,
                  "--std.code.lines.comments, "
                  "--std.code.lines.total, "
                  "--std.code.complexity.cyclomatic, "
-                 "and either --ext.halstead.all or --ext.halstead.H_Volume "
+                 "and either --ext.halstead.all or --miext.halstead.H_Volume "
                  "[default: %default]")
         parser.add_option("--miext.maintainability.MIwoc", "--emow", action="store_true", default=False,
             help="Maintainability metrics plugin; the following modules are required: "
@@ -40,7 +40,7 @@ class Plugin(api.Plugin,
                  "--std.code.lines.total, "
                  "--std.code.complexity.cyclomatic, "
                  "--ext.halstead.base, "
-                 "--ext.halstead.H_Volume "
+                 "--miext.halstead.H_Volume "
                  "[default: %default]")
 
     def configure(self, options):
@@ -56,20 +56,20 @@ class Plugin(api.Plugin,
                                       format(each))
             req_or = False
             required_opts = ['ext.halstead.all',
-                             'ext.halstead.H_Volume']
+                             'miext.halstead.H_Volume']
             for each in required_opts:
                 if options.__dict__[each] == True:
                     req_or = True
                     break
             if ( req_or == False ):
-                self.parser.error('option --ext.mi_oman.all: requires --ext.halstead.all or --ext.halstead.H_Volume option')
+                self.parser.error('option --ext.mi_oman.all: requires --ext.halstead.all or --miext.halstead.H_Volume option')
 
         if self.is_active_woc == True:
             required_opts = ['std.code.complexity.cyclomatic',
                             'std.code.lines.comments',
                             'std.code.lines.total',
                             'ext.halstead.base',
-                            'ext.halstead.H_Volume']
+                            'miext.halstead.H_Volume']
             for each in required_opts:
                 if options.__dict__[each] == False:
                     self.parser.error('option --ext.mi_oman.woc: requires --{0} option'.
