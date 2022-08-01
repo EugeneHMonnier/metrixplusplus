@@ -32,11 +32,20 @@ class Plugin(api.Plugin,
                  "--std.code.lines.comments, "
                  "--std.code.lines.total, "
                  "--std.code.complexity.cyclomatic, "
-                 "and either --ext.halstead.all or --ext.halstead.volume "
+                 "and either --ext.halstead.all or --miext.halstead.H_Volume "
+                 "[default: %default]")
+        parser.add_option("--miext.maintainability.MIwoc", "--emow", action="store_true", default=False,
+            help="Maintainability metrics plugin; the following modules are required: "
+                 "--std.code.lines.comments, "
+                 "--std.code.lines.total, "
+                 "--std.code.complexity.cyclomatic, "
+                 "--ext.halstead.base, "
+                 "--miext.halstead.H_Volume "
                  "[default: %default]")
 
     def configure(self, options):
         self.is_active_oman = options.__dict__['ext.mi_oman.all']
+        self.is_active_woc = options.__dict__['miext.maintainability.MIwoc']
         if self.is_active_oman == True:
             required_opts = ['std.code.complexity.cyclomatic',
                              'std.code.lines.comments',
@@ -47,13 +56,24 @@ class Plugin(api.Plugin,
                                       format(each))
             req_or = False
             required_opts = ['ext.halstead.all',
-                             'ext.halstead.volume']
+                             'miext.halstead.H_Volume']
             for each in required_opts:
                 if options.__dict__[each] == True:
                     req_or = True
                     break
             if ( req_or == False ):
-                self.parser.error('option --ext.mi_oman.all: requires --ext.halstead.all or --ext.halstead.volume option')
+                self.parser.error('option --ext.mi_oman.all: requires --ext.halstead.all or --miext.halstead.H_Volume option')
+
+        if self.is_active_woc == True:
+            required_opts = ['std.code.complexity.cyclomatic',
+                            'std.code.lines.comments',
+                            'std.code.lines.total',
+                            'ext.halstead.base',
+                            'miext.halstead.H_Volume']
+            for each in required_opts:
+                if options.__dict__[each] == False:
+                    self.parser.error('option --ext.mi_oman.woc: requires --{0} option'.
+                                    format(each))
 
     def initialize(self):
 
@@ -63,7 +83,7 @@ class Plugin(api.Plugin,
                              '*':(None, self.Oman_perCM)
                             },
                             marker_type_mask=api.Marker.T.NONE)
-        self.declare_metric(self.is_active_oman,
+        self.declare_metric(self.is_active_woc,
                             self.Field('MIwoc', float),
                             {
                              '*':(None, self.Oman_MIwoc)
@@ -103,6 +123,11 @@ class Plugin(api.Plugin,
             # average values: since we are on a per module basis these are the
             # module based values:
             self.aveG = self.region.get_data('std.code.complexity', 'cyclomatic')
+
+            # if results of cyclomatic complexity are None set self.aveG to 0
+            # in order to return valid MI value
+            if self.aveG == None: self.aveG = 0
+            
             self.aveV = self.region.get_data('miext.halstead', 'H_Volume')
             self.aveLOC = self.LOCphy
 

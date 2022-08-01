@@ -41,7 +41,7 @@ class Plugin(api.Plugin,
             help="Halstead metrics plugin: vocabulary 'n' [default: %default]")
         parser.add_option("--ext.halstead.length", "--ehlen", action="store_true", default=False,
             help="Halstead metrics plugin: program length 'N' [default: %default]")
-        parser.add_option("--ext.halstead.volume", "--ehv", action="store_true", default=False,
+        parser.add_option("--miext.halstead.H_Volume", "--ehv", action="store_true", default=False,
             help="Halstead metrics plugin: program volume [default: %default]")
         parser.add_option("--ext.halstead.difficulty", "--ehd", action="store_true", default=False,
             help="Halstead metrics plugin: program difficulty [default: %default]")
@@ -60,7 +60,7 @@ class Plugin(api.Plugin,
             or self.is_active_eha
         self.is_active_ehN = options.__dict__['ext.halstead.length']        \
             or self.is_active_eha
-        self.is_active_ehV = options.__dict__['ext.halstead.volume']        \
+        self.is_active_ehV = options.__dict__['miext.halstead.H_Volume']        \
             or self.is_active_eha
         self.is_active_ehD = options.__dict__['ext.halstead.difficulty']    \
             or self.is_active_eha
